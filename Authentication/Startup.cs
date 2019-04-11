@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.OAuth;
@@ -14,7 +16,8 @@ namespace Authentication
         {
             var oAuthAuthorizationServerProvider = new OAuthAuthorizationServerProvider
             {
-                OnValidateClientAuthentication = ValidateClientAuthentication
+                OnValidateClientAuthentication = ValidateClientAuthentication,
+                OnGrantResourceOwnerCredentials = GrantResourceOwnerCredentials
             };
             var oAuthAuthorizationServerOptions = new OAuthAuthorizationServerOptions
             {
@@ -31,6 +34,16 @@ namespace Authentication
                 context.Response.ContentType = "text/plain";
                 return context.Response.WriteAsync("Hello World!");
             });
+        }
+
+        private static Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
+        {
+            if (context.UserName == "username" && context.Password == "password")
+            {
+                var identity = new ClaimsIdentity(new GenericIdentity(context.UserName));
+                context.Validated(identity);
+            }
+            return Task.FromResult<object>(null);
         }
 
         private static Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
