@@ -25,7 +25,8 @@ namespace Authentication
                 AllowInsecureHttp = true,
 #endif
                 TokenEndpointPath = new PathString("/token"),
-                Provider = oAuthAuthorizationServerProvider
+                Provider = oAuthAuthorizationServerProvider,
+                AccessTokenFormat = new CustomAccessTokenFormat()
             };
             app.UseOAuthAuthorizationServer(oAuthAuthorizationServerOptions);
 
